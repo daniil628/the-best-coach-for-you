@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Твой персональный тренер</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/montserrat" rel="stylesheet">
+    <style>
+        /* Общие стили */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2c04?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center/cover; /* Обновленный фон со штангами и качками */
+            min-height: 100vh;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: relative; /* Для позиционирования псевдоэлемента */
+        }
+
+        body::before { /* Псевдоэлемент для более темного оверлея */
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Более темный оверлей для лучшей читаемости текста */
+            z-index: -1; /* Размещаем за контентом body */
+        }
+
+
+        .container {
+            background: rgba(20, 20, 20, 0.85); /* Более темный и слегка прозрачный фон контейнера */
+            padding: 60px; /* Увеличенный padding для большего пространства */
+            border-radius: 20px; /* Более скругленные углы */
+            max-width: 1200px;
+            width: 95%; /* Увеличенная ширина контейнера на больших экранах */
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3); /* Усиленная тень */
+            margin: auto;
+            margin-top: 60px; /* Увеличенный верхний отступ */
+            margin-bottom: 60px; /* Добавлен нижний отступ */
+            text-align: center; /* Центрирование текста в контейнере */
+        }
+
+        h1 {
+            font-size: 3.5em; /* Увеличенный размер заголовка */
+            margin-bottom: 25px; /* Увеличенный отступ */
+            font-family: 'Montserrat', sans-serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* Тень для текста заголовка */
+            letter-spacing: 1.2px; /* Увеличенный межбуквенный интервал */
+            font-weight: 700; /* Жирный шрифт */
+        }
+
+        h2 {
+            font-size: 2.2em; /* Увеличенный размер подзаголовков */
+            margin-top: 40px; /* Увеличенный отступ */
+            margin-bottom: 20px;
+            font-family: 'Montserrat', sans-serif;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Тень для подзаголовков */
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.5em; /* Увеличенный размер основного текста */
+            line-height: 1.7;
+            margin-bottom: 25px; /* Увеличенный отступ */
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4); /* Тень для основного текста */
+        }
+
+        .stats {
+            font-weight: bold;
+            font-size: 1.6em; /* Увеличенный размер для статистики */
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+        }
+
+        .button {
+            display: inline-block;
+            padding: 22px 45px; /* Увеличенный padding для кнопки */
+            background-color: #0080ff; /* Более яркий синий цвет кнопки */
+            color: white;
+            text-decoration: none;
+            border-radius: 12px; /* Более скругленные углы кнопки */
+            font-size: 1.5em; /* Увеличенный размер текста кнопки */
+            margin-top: 40px; /* Увеличенный отступ кнопки */
+            transition: background-color 0.3s ease, transform 0.3s ease; /* Добавлен transition для transform */
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.3); /* Усиленная тень для кнопки */
+            font-weight: 700; /* Жирный шрифт для кнопки */
+            letter-spacing: 1.1px; /* Увеличенный межбуквенный интервал для кнопки */
+        }
+
+        .button:hover {
+            background-color: #0066cc; /* Более темный синий цвет при наведении */
+            transform: scale(1.05); /* Небольшое увеличение при наведении */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); /* Еще более усиленная тень при наведении */
+        }
+
+        #modal {
+            display: none;
+            position: fixed;
+            z-index: 2; /* Увеличенный z-index, чтобы модалка была поверх оверлея */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6); /* Более темный фон модалки */
+        }
+
+        .modal-content {
+            background-color: #f8f9fa; /* Светлый фон модального окна */
+            margin: 5% auto; /* Меньший верхний отступ для модалки */
+            padding: 40px; /* Увеличенный padding в модалке */
+            border: none; /* Убрана граница */
+            width: 70%; /* Увеличенная ширина модалки */
+            border-radius: 15px; /* Скругленные углы модалки */
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.4); /* Усиленная тень для модалки */
+            color: #333; /* Темный цвет текста в модалке */
+        }
+
+        .close {
+            color: #666; /* Более темный цвет крестика закрытия */
+            float: right;
+            font-size: 42px; /* Увеличенный размер крестика */
+            font-weight: bold;
+            opacity: 0.7; /* Полупрозрачный крестик */
+            transition: opacity 0.3s ease; /* Transition для opacity */
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+            opacity: 1; /* Непрозрачный крестик при наведении */
+        }
+
+        .modal-content a {
+            color: #0080ff; /* Более яркий синий цвет ссылок в модалке */
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .modal-content a:hover {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+
+        /* Стили для формы в модальном окне */
+        .modal-form label {
+            display: block;
+            margin-top: 20px; /* Увеличенный отступ сверху для label */
+            font-weight: bold;
+            color: #555; /* Более темный цвет текста label */
+            font-size: 1.2em; /* Увеличенный размер шрифта label */
+        }
+
+        .modal-form input[type="text"],
+        .modal-form input[type="email"],
+        .modal-form input[type="tel"],
+        .modal-form textarea {
+            width: 100%;
+            padding: 15px; /* Увеличенный padding для полей формы */
+            margin-top: 10px; /* Увеличенный отступ сверху для полей */
+            border: 2px solid #ddd; /* Более толстая граница для полей */
+            border-radius: 8px; /* Скругленные углы для полей */
+            box-sizing: border-box;
+            font-size: 1.2em; /* Увеличенный размер шрифта в полях */
+            color: #444; /* Более темный цвет текста в полях */
+        }
+
+        .modal-form textarea {
+            height: 180px; /* Увеличенная высота textarea */
+        }
+
+        .modal-form button {
+            background-color: #0080ff; /* Более яркий синий цвет кнопки формы */
+            color: white;
+            padding: 18px 35px; /* Увеличенный padding для кнопки формы */
+            border: none;
+            border-radius: 12px; /* Скругленные углы кнопки формы */
+            font-size: 1.3em; /* Увеличенный размер шрифта кнопки формы */
+            cursor: pointer;
+            margin-top: 30px; /* Увеличенный отступ сверху для кнопки формы */
+            transition: background-color 0.3s ease, transform 0.3s ease; /* Добавлен transition для кнопки формы */
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.3); /* Тень для кнопки формы */
+            font-weight: 700; /* Жирный шрифт для кнопки формы */
+        }
+
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px; /* Уменьшенный padding для мобильных устройств */
+                width: 95%; /* Занимает большую часть ширины на мобильных */
+                margin-top: 30px; /* Уменьшенный верхний отступ на мобильных */
+                margin-bottom: 30px; /* Уменьшенный нижний отступ на мобильных */
+                border-radius: 15px; /* Менее скругленные углы на мобильных */
+            }
+
+            h1 {
+                font-size: 2.5em; /* Уменьшенный размер заголовка на мобильных */
+                margin-bottom: 15px; /* Уменьшенный отступ на мобильных */
+            }
+
+            h2 {
+                font-size: 1.8em; /* Уменьшенный размер подзаголовков на мобильных */
+                margin-top: 25px; /* Уменьшенный верхний отступ на мобильных */
+            }
+
+            p {
+                font-size: 1.3em; /* Уменьшенный размер основного текста на мобильных */
+                margin-bottom: 20px; /* Уменьшенный отступ на мобильных */
+            }
+
+            .button {
+                font-size: 1.3em; /* Уменьшенный размер кнопки на мобильных */
+                padding: 18px 35px; /* Уменьшенный padding кнопки на мобильных */
+                margin-top: 30px; /* Уменьшенный верхний отступ кнопки на мобильных */
+            }
+
+            .modal-content {
+                width: 95%; /* Модалка занимает большую часть ширины на мобильных */
+                padding: 30px; /* Уменьшенный padding модалки на мобильных */
+                margin-top: 10%; /* Увеличенный верхний отступ модалки на мобильных, чтобы не перекрывало шапку браузера */
+            }
+
+            .close {
+                font-size: 36px; /* Уменьшенный размер крестика на мобильных */
+            }
+
+            .modal-form label,
+            .modal-form input[type="text"],
+            .modal-form input[type="email"],
+            .modal-form input[type="tel"],
+            .modal-form textarea,
+            .modal-form button {
+                font-size: 1em; /* Уменьшенный размер шрифтов в форме на мобильных */
+            }
+        }
+
+        /* Стиль для галереи */
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 40px; /* Увеличенный отступ сверху для галереи */
+        }
+
+        .gallery img {
+            width: 320px; /* Немного увеличенный размер изображений в галерее */
+            height: 320px; /* Квадратные изображения */
+            object-fit: cover;
+            margin: 15px; /* Увеличенный отступ между изображениями галереи */
+            border-radius: 12px; /* Скругленные углы изображений галереи */
+            box-shadow: 0 7px 12px rgba(0, 0, 0, 0.25); /* Тень для изображений галереи */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Добавлен transition для box-shadow */
+        }
+
+        .gallery img:hover {
+            transform: scale(1.08); /* Меньшее увеличение при наведении на изображения галереи */
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.35); /* Усиленная тень при наведении на изображения галереи */
+        }
+
+        /* Стиль для раздела "О тренере" */
+        .about-trainer {
+            margin-top: 70px; /* Увеличенный отступ сверху для раздела "О тренере" */
+            text-align: center;
+        }
+
+        .about-trainer img {
+            width: 320px; /* Увеличенный размер фото тренера */
+            height: 320px;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 7px 12px rgba(0, 0, 0, 0.25); /* Тень для фото тренера */
+            margin-bottom: 30px; /* Увеличенный отступ снизу для фото тренера */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Добавлен transition для фото тренера */
+        }
+
+        .about-trainer img:hover {
+            transform: scale(1.05); /* Небольшое увеличение при наведении на фото тренера */
+            box-shadow: 0 10px 18 rgba(0, 0, 0, 0.35); /* Усиленная тень при наведении на фото тренера */
+        }
+
+
+        .about-trainer p {
+            max-width: 900px; /* Увеличенная максимальная ширина текста "О тренере" */
+            margin: 0 auto;
+            font-size: 1.45em; /* Увеличенный размер шрифта в разделе "О тренере" */
+            line-height: 1.7;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Стиль для отзывов клиентов */
+        .testimonials {
+            margin-top: 70px; /* Увеличенный отступ сверху для отзывов */
+        }
+
+        .testimonial {
+            background-color: rgba(255, 255, 255, 0.08); /* Менее прозрачный фон для отзывов */
+            padding: 30px; /* Увеличенный padding для отзывов */
+            border-radius: 15px; /* Скругленные углы для отзывов */
+            margin-bottom: 30px; /* Увеличенный отступ между отзывами */
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); /* Тень для отзывов */
+            transition: background-color 0.3s ease; /* Transition для фона отзывов */
+        }
+
+        .testimonial:hover {
+            background-color: rgba(255, 255, 255, 0.15); /* Фон отзывов становится немного ярче при наведении */
+        }
+
+        .testimonial p {
+            font-style: italic;
+            font-size: 1.4em; /* Увеличенный размер шрифта для текста отзыва */
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+        }
+
+        .testimonial .author {
+            font-weight: bold;
+            margin-top: 15px; /* Увеличенный отступ сверху для имени автора отзыва */
+            text-align: right;
+            font-size: 1.2em; /* Увеличенный размер шрифта для имени автора отзыва */
+            color: #eee; /* Более светлый цвет имени автора отзыва */
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Привет! Я твой онлайн-тренер</h1>
+        <p>Меня зовут <strong>ДАНИЛО</strong>, и я помогу тебе достичь твоих фитнес-целей!</p>
+
+        <h2>Мои достижения:</h2>
+        <p> Победитель чемпионата Украины</p>
+        <p> Опыт работы с атлетами разного уровня</p>
+
+        <h2>Силовые показатели:</h2>
+        <p class="stats">Жим лёжа: 140 кг</p>
+        <p class="stats">Приседание: 220 кг</p>
+        <p class="stats">Становая тяга: 250 кг</p>
+
+        <p><strong>Готов начать свой путь к лучшей форме?</strong></p>
+        <a href="#" class="button" id="openModal">Записаться на тренировку</a>
+
+        <div class="gallery">
+            <img src="https://images.unsplash.com/photo-1517842744674-2904992f5978?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Фото Галереи Серия 1">
+            <img src="https://images.unsplash.com/photo-1530177356825-5b1a33fa2898?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Фото Галереи Серия 2">
+            <img src="https://images.unsplash.com/photo-1607962837359-ff3e96558742?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Фото Галереи Серия 3">
+        </div>
+
+        <div class="about-trainer">
+            <h2>О тренере</h2>
+            <img src="https://images.unsplash.com/photo-1552726388-6e94d62eeaa4?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Фото Данило Тренер">
+            <p>Приветствую! Я Данило, твой персональный проводник в мир фитнеса и здорового образа жизни. Моя страсть - помогать людям раскрыть свой потенциал и достигать невероятных результатов. С многолетним опытом и победами в чемпионатах, я разработал уникальные методики, которые помогут тебе не только похудеть или набрать мышечную массу, но и почувствовать себя сильнее и энергичнее. Присоединяйся ко мне, и вместе мы построим тело твоей мечты!</p>
+        </div>
+
+        <div class="testimonials">
+            <h2>Отзывы клиентов</h2>
+            <div class="testimonial">
+                <p>"Данило - невероятный тренер! Благодаря его программе я сбросил 15 кг и чувствую себя намного лучше. Он всегда поддерживает и мотивирует, тренировки проходят на одном дыхании."</p>
+                <p class="author">- Иван, 32 года</p>
+            </div>
+            <div class="testimonial">
+                <p>"Тренируюсь с Данило уже полгода и очень довольна результатами. Моя фигура стала подтянутой, и я чувствую прилив сил. Данило всегда находит индивидуальный подход и дает ценные советы по питанию."</p>
+                <p class="author">- Елена, 28 лет</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Записаться на тренировку</h2>
+            <form class="modal-form">
+                <label for="name">Имя:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="phone">Телефон:</label>
+                <input type="tel" id="phone" name="phone">
+
+                <label for="message">Сообщение (необязательно):</label>
+                <textarea id="message" name="message"></textarea>
+
+                <button type="submit">Отправить заявку</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Модальное окно
+        var modal = document.getElementById("modal");
+        var btn = document.getElementById("openModal");
+        var span = document.getElementsByClassName("close")[0];
+
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
